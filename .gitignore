@@ -1,0 +1,38 @@
+# IntelliJ
+/.idea/
+**/*.iml
+
+# Eclipse
+**/.classpath
+**/.project
+**/.settings
+
+# Netbeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# Build artifacts
+*.jar
+out/
+**/build/
+**/bin/
+generated/
+
+# Gradle
+**/.gradle
+!gradle-wrapper.jar
+**/local.properties
+
+# Maven
+**/dependency-reduced-pom.xml
+**/META-INF/
+**/target/
+
+# Misc
+**/logs/
+**/*.test
+hs_err_pid*

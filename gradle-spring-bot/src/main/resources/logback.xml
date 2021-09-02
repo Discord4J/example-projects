@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+
+    <!-- Logs we care about -->
+    <logger name="io.netty" level="INFO"/>
+    <logger name="reactor" level="INFO"/>
+    <logger name="proxy" level="INFO"/>
+    <logger name="reactor.retry" level="DEBUG"/>
+    <logger name="discord4j.core" level="INFO"/>
+    <logger name="discord4j.gateway" level="INFO"/>
+    <logger name="discord4j.gateway.client" level="INFO"/>
+
+    <!-- Appenders -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Assigning default appenders -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>
