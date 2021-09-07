@@ -77,15 +77,25 @@ public class GlobalCommandRegistrar implements ApplicationRunner {
             }
 
             //Check if the command has been changed and needs to be updated.
-            boolean changed = !discordCommand.description().equals(command.description())
-                || !discordCommand.options().equals(command.options())
-                || !discordCommand.defaultPermission().equals(command.defaultPermission());
-
-            if (changed) {
+            if (hasChanged(discordCommand, command)) {
                 applicationService.modifyGlobalApplicationCommand(applicationId, discordCommandId, command).block();
 
                 LOGGER.info("Updated global command: " + command.name());
             }
         }
+    }
+
+    private boolean hasChanged(ApplicationCommandData discordCommand, ApplicationCommandRequest command) {
+        //Check if description has changed.
+        if (!discordCommand.description().equals(command.description())) return true;
+
+        //Check if default permissions have changed
+        boolean discordCommandDefaultPermission = discordCommand.defaultPermission().toOptional().orElse(true);
+        boolean commandDefaultPermission = command.defaultPermission().toOptional().orElse(true);
+
+        if (discordCommandDefaultPermission != commandDefaultPermission) return true;
+
+        //Check and return if options have changed.
+        return !discordCommand.options().equals(command.options());
     }
 }
