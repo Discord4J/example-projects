@@ -13,6 +13,16 @@ Provided are a set of very simple example projects showcasing two simple slash c
 * [Documentation](https://docs.discord4j.com)
 * [Discord](https://discord.gg/d4j)
 
+## ✅ Inviting Your Bot
+
+Discord now requires an additional scope in the invite link for slash commands. Below is a template invite link that will allow the bot to be invited and support application commands. Replace `{CLIENT_ID_HERE}` with your bot's client ID, found on its developer application page.
+
+`
+https://discord.com/oauth2/authorize?client_id={CLIENT_ID_HERE}&permissions=0&scope=bot%20applications.commands
+`
+
+This invite link allows inviting your bot to a server, and enabling application commands from your bot. This template link does not provide any additional permissions or scopes. To create a fully customized link, discord offers an invite link builder on the developer applications page (Click into your bot application, and navigate to the "OAuth2" page)
+
 ## 📦 Dependency Managers
 Each project is duplicated in Maven and Gradle to show how to import Discord4J into your project with the package manager of your choice.
 
