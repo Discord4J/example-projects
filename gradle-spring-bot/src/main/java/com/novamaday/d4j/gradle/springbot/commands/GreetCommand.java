@@ -1,6 +1,6 @@
 package com.novamaday.d4j.gradle.springbot.commands;
 
-import discord4j.core.event.domain.interaction.SlashCommandEvent;
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ public class GreetCommand implements SlashCommand {
     }
 
     @Override
-    public Mono<Void> handle(SlashCommandEvent event) {
+    public Mono<Void> handle(ChatInputInteractionEvent event) {
         /*
         Since slash command options are optional according to discal, we will wrap it into the following function
         that gets the value of our option as a Mono<String>, so that we may use it later on without

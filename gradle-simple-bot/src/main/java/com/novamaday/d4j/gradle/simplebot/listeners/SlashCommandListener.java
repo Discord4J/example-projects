@@ -3,7 +3,7 @@ package com.novamaday.d4j.gradle.simplebot.listeners;
 import com.novamaday.d4j.gradle.simplebot.commands.GreetCommand;
 import com.novamaday.d4j.gradle.simplebot.commands.PingCommand;
 import com.novamaday.d4j.gradle.simplebot.commands.SlashCommand;
-import discord4j.core.event.domain.interaction.SlashCommandEvent;
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -20,7 +20,7 @@ public class SlashCommandListener {
         commands.add(new GreetCommand());
     }
 
-    public static Mono<Void> handle(SlashCommandEvent event) {
+    public static Mono<Void> handle(ChatInputInteractionEvent event) {
         // Convert our array list to a flux that we can iterate through
         return Flux.fromIterable(commands)
             //Filter out all commands that don't match the name of the command this event is for

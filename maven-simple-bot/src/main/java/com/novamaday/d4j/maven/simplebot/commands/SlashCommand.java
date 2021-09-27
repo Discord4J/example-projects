@@ -1,6 +1,6 @@
 package com.novamaday.d4j.maven.simplebot.commands;
 
-import discord4j.core.event.domain.interaction.SlashCommandEvent;
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import reactor.core.publisher.Mono;
 
 /**
@@ -12,5 +12,5 @@ public interface SlashCommand {
 
     String getName();
 
-    Mono<Void> handle(SlashCommandEvent event);
+    Mono<Void> handle(ChatInputInteractionEvent event);
 }

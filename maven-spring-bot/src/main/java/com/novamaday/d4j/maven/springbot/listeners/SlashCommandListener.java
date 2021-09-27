@@ -1,7 +1,7 @@
 package com.novamaday.d4j.maven.springbot.listeners;
 
 import com.novamaday.d4j.maven.springbot.commands.SlashCommand;
-import discord4j.core.event.domain.interaction.SlashCommandEvent;
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import org.springframework.context.ApplicationContext;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -17,7 +17,7 @@ public class SlashCommandListener {
     }
 
 
-    public Mono<Void> handle(SlashCommandEvent event) {
+    public Mono<Void> handle(ChatInputInteractionEvent event) {
         //Convert our list to a flux that we can iterate through
         return Flux.fromIterable(commands)
             //Filter out all commands that don't match the name this event is for

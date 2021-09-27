@@ -4,7 +4,7 @@
 
 [![Support Server Invite](https://img.shields.io/discord/208023865127862272.svg?color=7289da&label=Discord4J&logo=discord&style=flat-square)](https://discord.gg/d4j)
 
-Provided are a set of very simple example projects showcasing two simple slash commands: ping-pong and greet using Discord4J `3.2.0-RC3`.
+Provided are a set of very simple example projects showcasing two simple slash commands: ping-pong and greet using Discord4J `3.2.0`.
 
 ## 🔗 Quick Links
 
@@ -12,6 +12,10 @@ Provided are a set of very simple example projects showcasing two simple slash c
 * [Javadocs](https://www.javadoc.io/doc/com.discord4j/discord4j-core)
 * [Documentation](https://docs.discord4j.com)
 * [Discord](https://discord.gg/d4j)
+
+## Interactions
+
+Discord4J has full support for interactions. These example projects showcase how to easily create, manage, and respond to application commands (slash commands). More details on using interactions with D4J can be found in our docs.
 
 ## ✅ Inviting Your Bot
 

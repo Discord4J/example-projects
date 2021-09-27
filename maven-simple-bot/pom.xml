@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.discord4j</groupId>
             <artifactId>discord4j-core</artifactId>
-            <version>3.2.0-RC3</version>
+            <version>3.2.0</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

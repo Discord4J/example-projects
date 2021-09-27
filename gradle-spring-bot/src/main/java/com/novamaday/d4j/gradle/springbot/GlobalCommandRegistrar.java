@@ -86,8 +86,11 @@ public class GlobalCommandRegistrar implements ApplicationRunner {
     }
 
     private boolean hasChanged(ApplicationCommandData discordCommand, ApplicationCommandRequest command) {
+        // Compare types
+        if (!discordCommand.type().toOptional().orElse(1).equals(command.type().toOptional().orElse(1))) return true;
+
         //Check if description has changed.
-        if (!discordCommand.description().equals(command.description())) return true;
+        if (!discordCommand.description().equals(command.description().toOptional().orElse(""))) return true;
 
         //Check if default permissions have changed
         boolean discordCommandDefaultPermission = discordCommand.defaultPermission().toOptional().orElse(true);

@@ -15,7 +15,7 @@ repositories {
 sourceSets {
     all {
         dependencies {
-            implementation("com.discord4j:discord4j-core:3.2.0-RC3")
+            implementation("com.discord4j:discord4j-core:3.2.0")
             implementation("ch.qos.logback:logback-classic:1.2.3")
         }
     }
