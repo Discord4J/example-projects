@@ -14,22 +14,19 @@ public class GreetCommand implements SlashCommand {
     @Override
     public Mono<Void> handle(ChatInputInteractionEvent event) {
         /*
-        Since slash command options are optional according to discal, we will wrap it into the following function
-        that gets the value of our option as a Mono<String>, so that we may use it later on without
-        needing to call .get() several times on our optional values.
+        Since slash command options are optional according to discord, we will wrap it into the following function
+        that gets the value of our option as a String without chaining several .get() on all the optional values
 
-        In this case, there is no fear the mono will return empty as this is marked "required: true" in our json.
+        In this case, there is no fear it will return empty/null as this is marked "required: true" in our json.
          */
-        Mono<String> nameMono = Mono.justOrEmpty(event.getOption("name")
+        String name = event.getOption("name")
             .flatMap(ApplicationCommandInteractionOption::getValue)
-        ).map(ApplicationCommandInteractionOptionValue::asString);
+            .map(ApplicationCommandInteractionOptionValue::asString)
+            .get(); //This is warning us that we didn't check if its present, we can ignore this on required options
 
-
-        return nameMono.flatMap(name -> {
-            //Reply to the slash command, with the name the user supplied
-            return event.reply()
-                .withEphemeral(true)
-                .withContent("Hello, " + name);
-        });
+        //Reply to the slash command, with the name the user supplied
+        return  event.reply()
+            .withEphemeral(true)
+            .withContent("Hello, " + name);
     }
 }
