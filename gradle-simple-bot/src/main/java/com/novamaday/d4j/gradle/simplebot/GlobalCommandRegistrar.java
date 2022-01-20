@@ -1,7 +1,6 @@
 package com.novamaday.d4j.gradle.simplebot;
 
 import discord4j.common.JacksonResources;
-import discord4j.discordjson.json.ApplicationCommandData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.rest.RestClient;
 import discord4j.rest.service.ApplicationService;
@@ -11,7 +10,9 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class GlobalCommandRegistrar {
@@ -32,68 +33,22 @@ public class GlobalCommandRegistrar {
         final ApplicationService applicationService = restClient.getApplicationService();
         final long applicationId = restClient.getApplicationId().block();
 
-        //These are commands already registered with discord from previous runs of the bot.
-        Map<String, ApplicationCommandData> discordCommands = applicationService
-            .getGlobalApplicationCommands(applicationId)
-            .collectMap(ApplicationCommandData::name)
-            .block();
-
         //Get our commands json from resources as command data
-        Map<String, ApplicationCommandRequest> commands = new HashMap<>();
+        List<ApplicationCommandRequest> commands = new ArrayList<>();
         for (String json : getCommandsJson()) {
             ApplicationCommandRequest request = d4jMapper.getObjectMapper()
                 .readValue(json, ApplicationCommandRequest.class);
 
-            commands.put(request.name(), request); //Add to our array list
-
-            //Check if this is a new command that has not already been registered.
-            if (!discordCommands.containsKey(request.name())) {
-                //Not yet created with discord, let's do it now.
-                applicationService.createGlobalApplicationCommand(applicationId, request).block();
-
-                LOGGER.info("Created global command: " + request.name());
-            }
+            commands.add(request); //Add to our array list
         }
 
-        //Check if any commands have been deleted or changed.
-        for (ApplicationCommandData discordCommand : discordCommands.values()) {
-            long discordCommandId = Long.parseLong(discordCommand.id());
-
-            ApplicationCommandRequest command = commands.get(discordCommand.name());
-
-            if (command == null) {
-                //Removed command.json, delete global command
-                applicationService.deleteGlobalApplicationCommand(applicationId, discordCommandId).block();
-
-                LOGGER.info("Deleted global command: " + discordCommand.name());
-                continue; //Skip further processing on this command.
-            }
-
-            //Check if the command has been changed and needs to be updated.
-            if (hasChanged(discordCommand, command)) {
-                applicationService.modifyGlobalApplicationCommand(applicationId, discordCommandId, command).block();
-
-                LOGGER.info("Updated global command: " + command.name());
-            }
-        }
-    }
-
-
-    private boolean hasChanged(ApplicationCommandData discordCommand, ApplicationCommandRequest command) {
-        // Compare types
-        if (!discordCommand.type().toOptional().orElse(1).equals(command.type().toOptional().orElse(1))) return true;
-
-        //Check if description has changed.
-        if (!discordCommand.description().equals(command.description().toOptional().orElse(""))) return true;
-
-        //Check if default permissions have changed
-        boolean discordCommandDefaultPermission = discordCommand.defaultPermission().toOptional().orElse(true);
-        boolean commandDefaultPermission = command.defaultPermission().toOptional().orElse(true);
-
-        if (discordCommandDefaultPermission != commandDefaultPermission) return true;
-
-        //Check and return if options have changed.
-        return !discordCommand.options().equals(command.options());
+        /* Bulk overwrite commands. This is now idempotent, so it is safe to use this even when only 1 command
+        is changed/added/removed
+        */
+        applicationService.bulkOverwriteGlobalApplicationCommand(applicationId, commands)
+            .doOnNext(ignore -> LOGGER.debug("Successfully registered Global Commands"))
+            .doOnError(e -> LOGGER.error("Failed to register global commands", e))
+            .subscribe();
     }
 
     /* The two below methods are boilerplate that can be completely removed when using Spring Boot */
@@ -126,6 +81,7 @@ public class GlobalCommandRegistrar {
 
     /**
      * Gets a specific resource file as String
+     *
      * @param fileName The file path omitting "resources/"
      * @return The contents of the file as a String, otherwise throws an exception
      */
