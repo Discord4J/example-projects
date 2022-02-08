@@ -7,8 +7,10 @@ import discord4j.rest.service.ApplicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.net.URISyntaxException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +22,15 @@ public class GlobalCommandRegistrar {
 
     private final RestClient restClient;
 
+    // The name of the folder the commands json is in, inside our resources folder
+    private static final String commandsFolderName = "commands/";
+
     public GlobalCommandRegistrar(RestClient restClient) {
         this.restClient = restClient;
     }
 
     //Since this will only run once on startup, blocking is okay.
-    protected void registerCommands() throws IOException {
+    protected void registerCommands(List<String> fileNames) throws IOException {
         //Create an ObjectMapper that supports Discord4J classes
         final JacksonResources d4jMapper = JacksonResources.create();
 
@@ -35,7 +40,7 @@ public class GlobalCommandRegistrar {
 
         //Get our commands json from resources as command data
         List<ApplicationCommandRequest> commands = new ArrayList<>();
-        for (String json : getCommandsJson()) {
+        for (String json : getCommandsJson(fileNames)) {
             ApplicationCommandRequest request = d4jMapper.getObjectMapper()
                 .readValue(json, ApplicationCommandRequest.class);
 
@@ -46,41 +51,30 @@ public class GlobalCommandRegistrar {
         is changed/added/removed
         */
         applicationService.bulkOverwriteGlobalApplicationCommand(applicationId, commands)
-            .doOnNext(ignore -> LOGGER.debug("Successfully registered Global Commands"))
+            .doOnNext(cmd -> LOGGER.debug("Successfully registered Global Command " + cmd.name()))
             .doOnError(e -> LOGGER.error("Failed to register global commands", e))
             .subscribe();
     }
 
     /* The two below methods are boilerplate that can be completely removed when using Spring Boot */
 
-    private static List<String> getCommandsJson() throws IOException {
-        //The name of the folder the commands json is in, inside our resources folder
-        final String commandsFolderName = "commands/";
-
-        //Get the folder as a resource
+    private static List<String> getCommandsJson(List<String> fileNames) throws IOException {
+        // Confirm that the commands folder exists
         URL url = GlobalCommandRegistrar.class.getClassLoader().getResource(commandsFolderName);
         Objects.requireNonNull(url, commandsFolderName + " could not be found");
 
-        File folder;
-        try {
-            folder = new File(url.toURI());
-        } catch (URISyntaxException e) {
-            folder = new File(url.getPath());
-        }
-
         //Get all the files inside this folder and return the contents of the files as a list of strings
         List<String> list = new ArrayList<>();
-        File[] files = Objects.requireNonNull(folder.listFiles(), folder + " is not a directory");
-
-        for (File file : files) {
-            String resourceFileAsString = getResourceFileAsString(commandsFolderName + file.getName());
-            list.add(resourceFileAsString);
+        for (String file : fileNames) {
+            String resourceFileAsString = getResourceFileAsString(commandsFolderName + file);
+            list.add(Objects.requireNonNull(resourceFileAsString, "Command file not found: " + file));
         }
         return list;
     }
 
     /**
      * Gets a specific resource file as String
+     *
      * @param fileName The file path omitting "resources/"
      * @return The contents of the file as a String, otherwise throws an exception
      */
